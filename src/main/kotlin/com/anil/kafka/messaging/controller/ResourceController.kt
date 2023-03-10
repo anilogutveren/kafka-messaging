@@ -1,6 +1,7 @@
 package com.anil.kafka.messaging.controller
 
 
+import com.anil.kafka.messaging.client.EventHubClient
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.kafka.core.KafkaTemplate
@@ -22,6 +23,10 @@ class ResourceController {
 
     @PostMapping
     fun sendMessage(@RequestBody kMessage: String) {
-        kafkaTemplate.send(topic, UUID.randomUUID().toString(), kMessage)
+        //kafkaTemplate.send(topic, UUID.randomUUID().toString(), kMessage)
+
+        val eventHubClient = EventHubClient()
+        eventHubClient.sendEvent(kMessage)
+        eventHubClient.close()
     }
 }
