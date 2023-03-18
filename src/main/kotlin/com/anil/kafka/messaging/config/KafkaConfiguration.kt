@@ -43,7 +43,7 @@ class KafkaConfiguration(
     @Bean
     fun kafkaListenerContainerFactory(): ConcurrentKafkaListenerContainerFactory<String, String> {
         val factory = ConcurrentKafkaListenerContainerFactory<String, String>()
-        factory.setConsumerFactory(consumerFactory())
+        factory.consumerFactory = consumerFactory()
 
         return factory
     }
