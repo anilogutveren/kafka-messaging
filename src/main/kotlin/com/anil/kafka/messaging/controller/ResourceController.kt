@@ -14,7 +14,7 @@ import java.util.*
 @RequestMapping("/kafkamessage")
 class ResourceController {
 
-    @Value("messaging.kafka.topic")
+    @Value("\${messaging.kafka.topic}")
     private lateinit var topic: String
 
     @Autowired
@@ -22,6 +22,7 @@ class ResourceController {
 
     @PostMapping
     fun sendMessage(@RequestBody kMessage: String) {
+        println(topic)
         kafkaTemplate.send(topic, UUID.randomUUID().toString(), kMessage)
     }
 }
