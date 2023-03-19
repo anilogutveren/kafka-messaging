@@ -9,9 +9,9 @@ class TopicConfiguration {
 
     fun newTopic(): NewTopic {
         return TopicBuilder
-            .name("new-example-topic")
+            .name("my-topic")
             .partitions(3)
             .replicas(3)
-            .build();
+            .build()
     }
 }

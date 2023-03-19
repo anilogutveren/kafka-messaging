@@ -1,9 +1,11 @@
 package com.anil.kafka.messaging.controller
 
 import org.apache.kafka.clients.consumer.Consumer
+import org.apache.kafka.clients.consumer.ConsumerRecord
 import org.apache.kafka.common.serialization.StringDeserializer
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.Timeout
@@ -11,25 +13,26 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate
 import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory
-import org.springframework.kafka.core.KafkaTemplate
+import org.springframework.kafka.listener.MessageListener
 import org.springframework.kafka.test.EmbeddedKafkaBroker
 import org.springframework.kafka.test.context.EmbeddedKafka
+import org.springframework.kafka.test.utils.ContainerTestUtils
 import org.springframework.kafka.test.utils.KafkaTestUtils
 import org.springframework.test.context.TestPropertySource
 import org.springframework.web.util.UriComponentsBuilder
 
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@EmbeddedKafka(topics = ["test-topic"], partitions = 3)
-@TestPropertySource(properties = ["spring.kafka.producer.bootstrap-servers=\${spring.embedded.kafka.brokers}",
-    "spring.kafka.admin.properties.bootstrap.servers=\${spring.embedded.kafka.brokers}"])
+@EmbeddedKafka(topics = ["my-topic"], partitions = 3, brokerProperties = ["listeners=PLAINTEXT://localhost:9092"])
+@TestPropertySource(
+    properties = ["spring.kafka.producer.bootstrap-servers=\${spring.embedded.kafka.brokers}",
+        "spring.kafka.admin.properties.bootstrap.servers=\${spring.embedded.kafka.brokers}"]
+)
 class ResourceControllerTest {
-
-    @Autowired
-    lateinit var kafkaTemplate: KafkaTemplate<String, String>
 
     @Autowired
     lateinit var embeddedKafkaBroker: EmbeddedKafkaBroker
@@ -37,7 +40,7 @@ class ResourceControllerTest {
     private lateinit var consumer: Consumer<String, String>
 
     @Autowired
-    var restTemplate: TestRestTemplate? = null
+    lateinit var restTemplate: TestRestTemplate
 
     @BeforeEach
     fun setUp() {
@@ -59,23 +62,23 @@ class ResourceControllerTest {
 
     @Test
     @Timeout(5)
-    fun testSendReceive() {
-        val message = "Hello, world!"
+    fun `Given a request with cookie header, When controller is called, Consumer receives a single record`() {
 
-        val request = HttpEntity<Any>(message)
-
-        val uri = UriComponentsBuilder.fromUriString("/kafkamessage")
+        val uri = UriComponentsBuilder.fromUriString("/callPage")
             .toUriString()
 
-        val response = restTemplate?.exchange(uri, HttpMethod.POST, request, String::class.java)
+        val headers = HttpHeaders().add("Cookie", "cookie_name=cookie_value")
 
-        assertEquals(HttpStatus.CREATED, response?.statusCode)
+        val requestEntity = HttpEntity<Any>(headers)
 
-        val consumerRecord = KafkaTestUtils.getSingleRecord(consumer,"test-topic")
+        val response = restTemplate.exchange(uri, HttpMethod.GET, requestEntity, String::class.java)
+
+        assertEquals(HttpStatus.OK, response?.statusCode)
+
+        val consumerRecord = KafkaTestUtils.getSingleRecord(consumer, "my-topic")
 
         val recordValue = consumerRecord.value()
 
-        assertEquals(message, recordValue)
-
+        assertTrue(recordValue.isNotEmpty())
     }
 }
