@@ -7,12 +7,11 @@ import javax.persistence.Id
 
 data class RequestEventDto(
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     var id: String,
 
     @NotNull
-    var cookie: String
+    var cookie: String,
 
 )

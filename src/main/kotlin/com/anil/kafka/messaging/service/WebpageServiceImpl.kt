@@ -7,13 +7,13 @@ import org.springframework.stereotype.Service
 import java.util.UUID
 
 @Service
-class WebpageServiceImpl: WebpageService {
+class WebpageServiceImpl : WebpageService {
 
     @Autowired
     private lateinit var eventProducerService: EventProducerService
 
     override fun getRequestDetails(request: HttpServletRequest) {
-        val newRequestEventDto = RequestEventDto(id = UUID.randomUUID().toString(), cookie = "testCookie" )
+        val newRequestEventDto = RequestEventDto(id = UUID.randomUUID().toString(), cookie = "testCookie")
 
         eventProducerService.sendNewRequestEventAsRecord(newRequestEventDto)
     }

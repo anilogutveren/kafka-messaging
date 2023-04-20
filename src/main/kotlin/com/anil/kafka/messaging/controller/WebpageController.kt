@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 class WebpageController(
     private val webpageService: WebpageService,
-    private val request: HttpServletRequest
+    private val request: HttpServletRequest,
 ) {
     @GetMapping("/callPage")
     fun showMainPage(): ResponseEntity<Unit> {

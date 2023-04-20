@@ -10,13 +10,10 @@ import org.springframework.kafka.core.KafkaTemplate
 import org.springframework.stereotype.Service
 import java.util.UUID
 
-
 @Service
 class EventProducerService {
 
     private val log = LoggerFactory.getLogger(KafkaListenerService::class.java)
-
-
 
     @Autowired
     lateinit var kafkaTemplate: KafkaTemplate<String, String>
@@ -43,7 +40,7 @@ class EventProducerService {
 
     fun sendNewRequestEventAsRecord(newRequestEventDto: RequestEventDto) {
         val key = newRequestEventDto.id
-        val value = objectMapper.writeValueAsString(newRequestEventDto);
+        val value = objectMapper.writeValueAsString(newRequestEventDto)
 
         val topic = "my-topic"
 

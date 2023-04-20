@@ -1,6 +1,5 @@
 package com.anil.kafka.messaging.controller
 
-
 import com.anil.kafka.messaging.config.TopicConfiguration
 import com.anil.kafka.messaging.service.EventProducerService
 import org.springframework.beans.factory.annotation.Autowired

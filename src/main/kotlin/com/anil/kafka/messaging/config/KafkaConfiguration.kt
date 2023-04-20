@@ -21,7 +21,7 @@ class KafkaConfiguration(
     @Value("\${messaging.kafka.address}")
     private var kafkaAddress: String,
     @Value("\${messaging.kafka.group.id}")
-    private var groupId: String
+    private var groupId: String,
 ) {
 
     @Bean
@@ -58,6 +58,5 @@ class KafkaConfiguration(
         props[ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         props[ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG] = StringDeserializer::class.java
         return DefaultKafkaConsumerFactory(props)
-
     }
 }
